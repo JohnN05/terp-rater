@@ -10,8 +10,16 @@
     "content_scripts": [
         {
             "matches": ["https://app.testudo.umd.edu/soc/*"],
+            "css": ["styles.css"],
             "js": ["content.js"]
         }
     ],
-    "host_permissions": ["https://planetterp.com/api/v1/*"]
+    "host_permissions": ["https://planetterp.com/api/v1/*"],
+    "web_accessible_resources": [
+
+        {
+          "resources": [ "fonts/*.ttf" ],
+          "matches": [ "https://app.testudo.umd.edu/*" ]
+        }
+      ]
 }

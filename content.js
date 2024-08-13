@@ -51,9 +51,14 @@ async function addCourseStats(){
             const courseTitle = course.querySelector(".course-title");
             
             if(courseTitle){
-                const gpaElement = document.createElement("span");
-                gpaElement.textContent = "\t" + await getCourseGPA(course.id);
-                courseTitle.insertAdjacentElement("afterend", gpaElement);
+                const gpaTag = document.createElement("span");
+                const courseGPA = await getCourseGPA(course.id)
+                gpaTag.className = "terp-rater-gpaTag"
+                gpaTag.textContent = courseGPA;
+                gpaTag.title="Average GPA";
+                gpaTag.style.backgroundColor = getTagColor(courseGPA, 4);
+
+                courseTitle.insertAdjacentElement("afterend", gpaTag);
             }
             
             const statsElement = document.createElement("div");
@@ -217,4 +222,14 @@ async function getCourseSeats(course){
         console.error(`Error fetching course data for ${course.id}.6`)
         return null;
     }
+}
+
+function getTagColor(value, maxValue){
+    const clampedValue = Math.min(Math.max(value, 0), maxValue)
+    if(value == 0){
+        return `grey`;
+    }
+
+    const hue = (clampedValue / 4) * 120;
+    return `hsl(${hue}, 100%, 30%)`;
 }
