@@ -1,4 +1,3 @@
-const instructors = new Set();
 const loadedInstructors = new Map();
 const basePTApi = "https://planetterp.com/api/v1/";
 const baseSocUrl = "https://app.testudo.umd.edu/soc/";
@@ -12,14 +11,14 @@ if(!semester){
 const courses = document.body.getElementsByClassName("course");
 let courseSectionsLoaded = 0;
 
-processCourses();
+addCourseStats();
 
 const observer = new MutationObserver((mutationRecords) => {
     for(const record of mutationRecords){
-        const added = record.addedNodes;
+        const addedNodes = record.addedNodes;
 
-        if(added.length > 0 && added[0].className==="sections-container"){
-            const sectionContainer = added[0];
+        if(addedNodes.length > 0 && addedNodes[0].className==="sections-container"){
+            const sectionContainer = addedNodes[0];
             const instructors = sectionContainer.getElementsByClassName("section-instructor");
             rateInstructors(instructors);
             courseSectionsLoaded++;
@@ -36,7 +35,7 @@ observer.observe(document.body, {
     subtree: true
 });
 
-async function processCourses(){
+async function addCourseStats(){
     if(!courses || courses.length == 0){
         console.warn("No courses available for processing.");
         return;
@@ -49,9 +48,16 @@ async function processCourses(){
                 console.warn(`Description container not found for ${course.id}`);
             }
 
-            const info = document.createElement("div");
-
-            const sectionData = await getSectionsData(course);
+            const courseTitle = course.querySelector(".course-title");
+            
+            if(courseTitle){
+                const gpaElement = document.createElement("span");
+                gpaElement.textContent = "\t" + await getCourseGPA(course.id);
+                courseTitle.insertAdjacentElement("afterend", gpaElement);
+            }
+            
+            const statsElement = document.createElement("div");
+            const sectionData = await getCourseSeats(course);
             if(!sectionData){
                 console.warn(`Failed to get section data for ${course.id}`);
             }
@@ -59,19 +65,36 @@ async function processCourses(){
             for(const stat in sectionData.stats){
                 const statElement = document.createElement("span");
                 statElement.textContent = `${stat}: ${sectionData.stats[stat]}`;
-                info.appendChild(statElement);
+                statsElement.appendChild(statElement);
             }
             
-            description.appendChild(info);
+            description.appendChild(statsElement);
 
-            const instructorss = course.getElementsByClassName("section-instructor");
-            rateInstructors(instructorss);
+            const instructors = course.getElementsByClassName("section-instructor");
+            rateInstructors(instructors);
 
         }catch(e){
             console.error(`Error processing ${course.id}`)
-        }
-        
+        }   
     }
+}
+
+async function getCourseGPA(courseId){
+    try{
+        const response = await fetch(`${basePTApi}course?name=${courseId}`); 
+        if(!response.ok){
+            return "N/A";
+        }else{
+            const courseJson = await response.json();
+            if(courseJson){
+                const averageGPA = (Math.round(courseJson.average_gpa*100)/100).toFixed(2);
+                return averageGPA;
+            }
+        }
+    }catch(e){
+        console.error(`Failed to request data for ${courseId}`);
+    }
+    return "N/A";
     
 }
 
@@ -140,7 +163,7 @@ async function rateInstructors(instructorsToLoad){
 }
     
 //ALLOW FILTER HANDLING (Blended options, hybrid, etc.)
-async function getSectionsData(course){
+async function getCourseSeats(course){
     if(!course){
         console.error('No course provided.')
         return null;
@@ -163,11 +186,6 @@ async function getSectionsData(course){
         const sections = requestHtml.getElementsByClassName("section-info-container");
         
         for(const section of sections){
-            const sectionInstructors = section.getElementsByClassName("section-instructor");
-            for(const instructor of sectionInstructors){
-                instructors.add(instructor.textContent);
-            }
-
             const sectionId = section.querySelector(".section-id")?.textContent || "Unknown";
             const totalCount = parseInt(section.querySelector(".total-seats-count")?.textContent) || 0;
             const openCount = parseInt(section.querySelector(".open-seats-count")?.textContent) || 0;
