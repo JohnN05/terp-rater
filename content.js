@@ -51,29 +51,47 @@ async function addCourseStats(){
             const courseTitle = course.querySelector(".course-title");
             
             if(courseTitle){
-                const gpaTag = document.createElement("span");
                 const courseGPA = await getCourseGPA(course.id)
-                gpaTag.className = "terp-rater-gpaTag"
+                const gpaTag = document.createElement("span");
+                gpaTag.className = "terp-rater-tag"
                 gpaTag.textContent = courseGPA;
                 gpaTag.title="Average GPA";
-                gpaTag.style.backgroundColor = getTagColor(courseGPA, 4);
+                gpaTag.style.backgroundColor = getTagColor(courseGPA == "N/A" ? 0 : courseGPA, 4, true);
 
-                courseTitle.insertAdjacentElement("afterend", gpaTag);
+                courseTitle.appendChild(gpaTag);
             }
             
-            const statsElement = document.createElement("div");
-            const sectionData = await getCourseSeats(course);
-            if(!sectionData){
+            const sectionSeats = await getCourseSeats(course);
+            if(!sectionSeats){
                 console.warn(`Failed to get section data for ${course.id}`);
             }
 
-            for(const stat in sectionData.stats){
-                const statElement = document.createElement("span");
-                statElement.textContent = `${stat}: ${sectionData.stats[stat]}`;
-                statsElement.appendChild(statElement);
+            if(sectionSeats.total){
+                const openSeatsTag = document.createElement("span");
+                openSeatsTag.className = "terp-rater-tag"
+
+                if(sectionSeats.open > 1){
+                    openSeatsTag.textContent = `${sectionSeats.open} seats left`;
+                }else if(sectionSeats.open == 1){
+                    openSeatsTag.textContent = `${sectionSeats.open} seat left`;
+                }else{
+                    openSeatsTag.textContent = "No seats left";
+                }
+
+                openSeatsTag.title="Seats remaining";
+                openSeatsTag.style.backgroundColor = getTagColor(sectionSeats.open, sectionSeats.total/2, false);
+                courseTitle.appendChild(openSeatsTag);
+
+                if(sectionSeats.waitlist > 0){
+                    const waitlistTag = document.createElement("span");
+                    waitlistTag.className = "terp-rater-tag"
+                    waitlistTag.textContent = `${sectionSeats.waitlist} waitlisted`;
+                    waitlistTag.title="Waitlisted";
+                    waitlistTag.style.backgroundColor = "#d5b60a";
+                    courseTitle.appendChild(waitlistTag);
+                }
+                
             }
-            
-            description.appendChild(statsElement);
 
             const instructors = course.getElementsByClassName("section-instructor");
             rateInstructors(instructors);
@@ -97,7 +115,7 @@ async function getCourseGPA(courseId){
             }
         }
     }catch(e){
-        console.error(`Failed to request data for ${courseId}`);
+        console.warn(`Unable to find a record for ${courseId}`);
     }
     return "N/A";
     
@@ -211,25 +229,23 @@ async function getCourseSeats(course){
         }
 
         return {
-            stats: {
-                "Total Seats": totalSeats, 
-                "Open Seats": totalOpen, 
-                "Waitlisted": totalWaitlisted
-            }
+            total: totalSeats, 
+            open: totalOpen, 
+            waitlist: totalWaitlisted
         };
 
     }catch(e){
-        console.error(`Error fetching course data for ${course.id}.6`)
+        console.error(`Error fetching course data for ${course.id}.`)
         return null;
     }
 }
 
-function getTagColor(value, maxValue){
+function getTagColor(value, maxValue, grayZero){
     const clampedValue = Math.min(Math.max(value, 0), maxValue)
-    if(value == 0){
+    if(grayZero && value == 0){
         return `grey`;
     }
 
-    const hue = (clampedValue / 4) * 120;
-    return `hsl(${hue}, 100%, 30%)`;
+    const hue = (clampedValue / maxValue) * 120;
+    return `hsl(${hue}, 80%, 35%)`;
 }

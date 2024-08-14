@@ -5,11 +5,11 @@
     src: url('chrome-extension://__MSG_@@extension_id__/fonts/WorkSans.ttf')format('truetype');
 }
 
-.terp-rater-gpaTag{
+.terp-rater-tag{
     box-sizing: border-box;
     border-radius: 8px;
     margin: auto 0 auto 5px;
-    padding: 2px 4px 2px 4px;
+    padding: 3px 5px 3px 5px;
 
     color: white;
     font-family: "Work Sans";
