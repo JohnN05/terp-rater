@@ -3,6 +3,9 @@ const basePTApi = "https://planetterp.com/api/v1/";
 const baseSocUrl = "https://app.testudo.umd.edu/soc/";
 const domParser = new DOMParser();
 
+const tag = document.createElement("span");
+tag.className = "terp-rater-tag"
+
 const semester = document.getElementById("term-id-input")?.value;
 if(!semester){
     console.warn("Semester not found.");
@@ -49,16 +52,21 @@ async function addCourseStats(){
             }
 
             const courseTitle = course.querySelector(".course-title");
+            const tagContainer = document.createElement("span");
+            tagContainer.className = "terp-rater-tag-container";
+            courseTitle.insertAdjacentElement("afterend", tagContainer);
             
             if(courseTitle){
                 const courseGPA = await getCourseGPA(course.id)
-                const gpaTag = document.createElement("span");
-                gpaTag.className = "terp-rater-tag"
-                gpaTag.textContent = courseGPA;
-                gpaTag.title="Average GPA";
-                gpaTag.style.backgroundColor = getTagColor(courseGPA == "N/A" ? 0 : courseGPA, 4, true);
+                if(courseGPA > 0){
+                    const gpaTag = tag.cloneNode();
+                    gpaTag.textContent = `🎓 ${courseGPA}`;
+                    gpaTag.title="Average GPA";
+                    gpaTag.style.backgroundColor = getTagColor(courseGPA == null ? 0 : courseGPA, 4, true);
 
-                courseTitle.appendChild(gpaTag);
+                    tagContainer.appendChild(gpaTag);
+                }
+                
             }
             
             const sectionSeats = await getCourseSeats(course);
@@ -67,8 +75,7 @@ async function addCourseStats(){
             }
 
             if(sectionSeats.total){
-                const openSeatsTag = document.createElement("span");
-                openSeatsTag.className = "terp-rater-tag"
+                const openSeatsTag = tag.cloneNode();
 
                 if(sectionSeats.open > 1){
                     openSeatsTag.textContent = `${sectionSeats.open} seats left`;
@@ -80,15 +87,14 @@ async function addCourseStats(){
 
                 openSeatsTag.title="Seats remaining";
                 openSeatsTag.style.backgroundColor = getTagColor(sectionSeats.open, sectionSeats.total/2, false);
-                courseTitle.appendChild(openSeatsTag);
+                tagContainer.appendChild(openSeatsTag);
 
                 if(sectionSeats.waitlist > 0){
-                    const waitlistTag = document.createElement("span");
-                    waitlistTag.className = "terp-rater-tag"
+                    const waitlistTag = tag.cloneNode();
                     waitlistTag.textContent = `${sectionSeats.waitlist} waitlisted`;
                     waitlistTag.title="Waitlisted";
                     waitlistTag.style.backgroundColor = "#d5b60a";
-                    courseTitle.appendChild(waitlistTag);
+                    tagContainer.appendChild(waitlistTag);
                 }
                 
             }
@@ -106,7 +112,7 @@ async function getCourseGPA(courseId){
     try{
         const response = await fetch(`${basePTApi}course?name=${courseId}`); 
         if(!response.ok){
-            return "N/A";
+            return null;
         }else{
             const courseJson = await response.json();
             if(courseJson){
@@ -117,7 +123,7 @@ async function getCourseGPA(courseId){
     }catch(e){
         console.warn(`Unable to find a record for ${courseId}`);
     }
-    return "N/A";
+    return null;
     
 }
 
@@ -133,9 +139,6 @@ async function rateInstructors(instructorsToLoad){
         if(instructorName.includes("TBA")){
             continue;
         }
-
-        const ratingElement = document.createElement("span");
-        ratingElement.className="tr-rating";
 
         if(!loadedInstructors.has(instructorName)){
             try{
@@ -159,11 +162,6 @@ async function rateInstructors(instructorsToLoad){
                         rating: rating,
                         reviewCount: reviewCount
                     })
-                        
-                    
-                    ratingElement.textContent = rating != null ? `\t${rating}⭐(${reviewCount})` : `\tNo reviews`;
-
-                    
                 }
                 
             }catch(e){
@@ -172,16 +170,21 @@ async function rateInstructors(instructorsToLoad){
                         rating: null
                     }
                 )
-                ratingElement.textContent = "\tN/A";
                 console.warn(`Unable to find a record for ${instructorName}`);
             }
-        }else{
-            const instructorRecord = loadedInstructors.get(instructorName);
-            ratingElement.textContent = instructorRecord.rating != null ? `\t${instructorRecord.rating}⭐(${instructorRecord.reviewCount})` : `\tN/A`;
         }
 
-        instructor.insertAdjacentElement("afterend", ratingElement);
+        const instructorRecord = loadedInstructors.get(instructorName);
 
+        //ADD TOOLTIP WITH ADDITIONAL INFO SUCH AS AVERAGE GPA FOR SPECIFIC PROFESSOR
+        if(instructorRecord.rating){
+            const ratingTag = tag.cloneNode();
+            ratingTag.title="Instructor Rating"
+            ratingTag.textContent = `\t${instructorRecord.rating}⭐ (${instructorRecord.reviewCount})`;
+            ratingTag.style.backgroundColor = getTagColor(instructorRecord.rating, 5, true);
+            instructor.insertAdjacentElement("afterend", ratingTag);
+        }
+        
     }
 }
     

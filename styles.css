@@ -9,8 +9,20 @@
     box-sizing: border-box;
     border-radius: 8px;
     margin: auto 0 auto 5px;
-    padding: 3px 5px 3px 5px;
+    padding: 0.15em 0.5em 0.15em 0.5em;
 
     color: white;
     font-family: "Work Sans";
+}
+
+.course-basic-info-container div.thirteen.columns{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.section-info-container .section-instructors{
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
 }
