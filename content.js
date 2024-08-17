@@ -64,6 +64,18 @@ async function addCourseStats(){
                     gpaTag.title="Average GPA";
                     gpaTag.style.backgroundColor = getTagColor(courseGPA == null ? 0 : courseGPA, 4, true);
 
+                    const tooltip = document.createElement("span")
+                    tooltip.className="terp-rater-tooltip";
+                    tooltip.textContent = `Average ${course.id} GPA`;
+                    gpaTag.appendChild(tooltip);
+
+                    gpaTag.addEventListener("mouseover", () => {
+                        tooltip.classList.add('terp-rater-tooltip-visible');
+                    })
+                    gpaTag.addEventListener("mouseout", () => {
+                        tooltip.classList.remove('terp-rater-tooltip-visible');
+                    })
+
                     tagContainer.appendChild(gpaTag);
                 }
                 
@@ -180,7 +192,7 @@ async function rateInstructors(instructorsToLoad){
         if(instructorRecord.rating){
             const ratingTag = tag.cloneNode();
             ratingTag.title="Instructor Rating"
-            ratingTag.textContent = `\t${instructorRecord.rating}⭐ (${instructorRecord.reviewCount})`;
+            ratingTag.textContent = `\t${instructorRecord.rating}`;
             ratingTag.style.backgroundColor = getTagColor(instructorRecord.rating, 5, true);
             instructor.insertAdjacentElement("afterend", ratingTag);
         }

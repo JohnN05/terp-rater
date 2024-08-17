@@ -9,10 +9,41 @@
     box-sizing: border-box;
     border-radius: 8px;
     margin: auto 0 auto 5px;
-    padding: 0.15em 0.5em 0.15em 0.5em;
+    padding: 0 5px 0 5px;
+    height: 25px;
 
     color: white;
     font-family: "Work Sans";
+
+    display: inline-flex;
+    align-items: center;
+
+    position: relative;
+}
+
+.terp-rater-tooltip{
+    box-sizing: border-box;
+    position: absolute;
+    transform: translateX(-50%);
+    left: 50%;
+    bottom: 125%;
+
+    padding: 3px;
+    border-radius: 15px;
+
+    color: black;
+    background-color: lightgray;
+    text-align: center;
+    white-space: nowrap;
+
+    transition: opacity 0.2s;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.terp-rater-tooltip-visible{
+    opacity: 1;
+    visibility: visible;
 }
 
 .course-basic-info-container div.thirteen.columns{
@@ -26,3 +57,4 @@
     flex-wrap: wrap;
     align-items: center;
 }
+
