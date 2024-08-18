@@ -10,8 +10,8 @@
     "content_scripts": [
         {
             "matches": ["https://app.testudo.umd.edu/soc/*"],
-            "css": ["styles.css"],
-            "js": ["content.js"]
+            "css": ["css/global.css", "css/tooltip.css", "css/courseUtils.css"],
+            "js": ["js/tooltip.js", "js/courseUtils.js","js/content.js"]
         }
     ],
     "host_permissions": ["https://planetterp.com/api/v1/*"],

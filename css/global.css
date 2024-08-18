@@ -1,0 +1,18 @@
+@font-face{
+    font-family: "Work Sans";
+    font-style: normal;
+    font-weight: 500;
+    src: url('chrome-extension://__MSG_@@extension_id__/fonts/WorkSans.ttf')format('truetype');
+}
+
+.course-basic-info-container div.thirteen.columns{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.section-info-container .section-instructors{
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+}

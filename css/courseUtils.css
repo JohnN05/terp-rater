@@ -1,0 +1,17 @@
+:root {
+    --tag-height: 25px;
+}
+
+.terp-rater-tag{
+    box-sizing: border-box;
+    border-radius: 8px;
+    margin: auto 0 auto 5px;
+    padding: 0 5px 0 5px;
+    height: var(--tag-height);
+
+    color: white;
+    font-family: "Work Sans";
+
+    display: inline-flex;
+    align-items: center;
+}

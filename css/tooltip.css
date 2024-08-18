@@ -1,0 +1,56 @@
+:root{
+    --tooltip-distance: 140%;
+}
+
+.terp-rater-tooltip, .terp-rater-tooltip-arrow{
+    box-sizing: border-box;
+    position: absolute;
+    transform: translateX(-50%);
+    left: 50%;
+
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+.terp-rater-tooltip{
+    bottom: calc(var(--tooltip-distance) + 9px);
+    z-index: 1;
+
+    padding: 3px 5px;
+    border-radius: 10px;
+
+    color: black;
+    background-color: white;
+    text-align: center;
+    white-space: nowrap;
+    font-size: 0.9em;
+    font-weight: 500;
+    font-family: "Work Sans", sans-serif;
+
+    filter: drop-shadow(2px 2px 2px black);
+}
+
+.terp-rater-tooltip-arrow{
+    bottom: var(--tooltip-distance);
+    z-index: 1;
+
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid white;
+}
+
+.terp-rater-tooltip-arrow.shadow{
+    filter: drop-shadow(2px 2px 2px black);
+    z-index: 0;
+}
+
+
+.terp-rater-tooltip-visible{
+    opacity: 1;
+}
+
+.terp-rater-tooltip-container{
+    position: relative;
+}

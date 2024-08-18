@@ -1,3 +1,4 @@
+const courses = document.body.getElementsByClassName("course");
 const loadedInstructors = new Map();
 const basePTApi = "https://planetterp.com/api/v1/";
 const baseSocUrl = "https://app.testudo.umd.edu/soc/";
@@ -10,33 +11,6 @@ const semester = document.getElementById("term-id-input")?.value;
 if(!semester){
     console.warn("Semester not found.");
 }
-
-const courses = document.body.getElementsByClassName("course");
-let courseSectionsLoaded = 0;
-
-addCourseStats();
-
-const observer = new MutationObserver((mutationRecords) => {
-    for(const record of mutationRecords){
-        const addedNodes = record.addedNodes;
-
-        if(addedNodes.length > 0 && addedNodes[0].className==="sections-container"){
-            const sectionContainer = addedNodes[0];
-            const instructors = sectionContainer.getElementsByClassName("section-instructor");
-            rateInstructors(instructors);
-            courseSectionsLoaded++;
-        }
-
-    }
-    if(courseSectionsLoaded >= courses.length){
-        observer.disconnect();
-    }
-});
-
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
 
 async function addCourseStats(){
     if(!courses || courses.length == 0){
@@ -64,19 +38,8 @@ async function addCourseStats(){
                     gpaTag.title="Average GPA";
                     gpaTag.style.backgroundColor = getTagColor(courseGPA == null ? 0 : courseGPA, 4, true);
 
-                    const tooltip = document.createElement("span")
-                    tooltip.className="terp-rater-tooltip";
-                    tooltip.textContent = `Average ${course.id} GPA`;
-                    gpaTag.appendChild(tooltip);
-
-                    gpaTag.addEventListener("mouseover", () => {
-                        tooltip.classList.add('terp-rater-tooltip-visible');
-                    })
-                    gpaTag.addEventListener("mouseout", () => {
-                        tooltip.classList.remove('terp-rater-tooltip-visible');
-                    })
-
-                    tagContainer.appendChild(gpaTag);
+                    const gpaContainer = addTooltip(gpaTag, `Represents the average GPA earned by students in ${course.id}.`)
+                    tagContainer.appendChild(gpaContainer);
                 }
                 
             }
@@ -88,7 +51,7 @@ async function addCourseStats(){
 
             if(sectionSeats.total){
                 const openSeatsTag = tag.cloneNode();
-
+                let tooltipMessage;
                 if(sectionSeats.open > 1){
                     openSeatsTag.textContent = `${sectionSeats.open} seats left`;
                 }else if(sectionSeats.open == 1){
@@ -99,23 +62,28 @@ async function addCourseStats(){
 
                 openSeatsTag.title="Seats remaining";
                 openSeatsTag.style.backgroundColor = getTagColor(sectionSeats.open, sectionSeats.total/2, false);
-                tagContainer.appendChild(openSeatsTag);
+
+                const openSeatsContainer = addTooltip(openSeatsTag, sectionSeats.open == 0 ? 
+                    `There are no open seats available throughout ${course.id}'s ${sectionSeats.totalSections} section(s).`:
+                    `${sectionSeats.open} open seats left among ${sectionSeats.openSections} section(s).`);
+                tagContainer.appendChild(openSeatsContainer);
 
                 if(sectionSeats.waitlist > 0){
                     const waitlistTag = tag.cloneNode();
                     waitlistTag.textContent = `${sectionSeats.waitlist} waitlisted`;
                     waitlistTag.title="Waitlisted";
                     waitlistTag.style.backgroundColor = "#d5b60a";
-                    tagContainer.appendChild(waitlistTag);
+
+                    const waitlistContainer = addTooltip(waitlistTag, `${sectionSeats.waitlist} student(s) waitlisted throughout ${sectionSeats.waitlistedSections} section(s).`)
+                    tagContainer.appendChild(waitlistContainer);
                 }
-                
             }
 
             const instructors = course.getElementsByClassName("section-instructor");
             rateInstructors(instructors);
 
         }catch(e){
-            console.error(`Error processing ${course.id}`)
+            console.error(`Error processing ${course.id}: ${e}`)
         }   
     }
 }
@@ -187,14 +155,14 @@ async function rateInstructors(instructorsToLoad){
         }
 
         const instructorRecord = loadedInstructors.get(instructorName);
-
-        //ADD TOOLTIP WITH ADDITIONAL INFO SUCH AS AVERAGE GPA FOR SPECIFIC PROFESSOR
         if(instructorRecord.rating){
             const ratingTag = tag.cloneNode();
             ratingTag.title="Instructor Rating"
             ratingTag.textContent = `\t${instructorRecord.rating}`;
             ratingTag.style.backgroundColor = getTagColor(instructorRecord.rating, 5, true);
-            instructor.insertAdjacentElement("afterend", ratingTag);
+
+            const ratingContainer = addTooltip(ratingTag, `${instructorName}'s overall professor rating from ${instructorRecord.reviewCount} review(s).`);
+            instructor.insertAdjacentElement("afterend", ratingContainer);
         }
         
     }
@@ -221,7 +189,11 @@ async function getCourseSeats(course){
         let totalSeats = 0;
         let totalOpen = 0;
         let totalWaitlisted = 0;
+        let openSections = 0;
+        let waitlistedSections = 0;
+        
         const sections = requestHtml.getElementsByClassName("section-info-container");
+        const totalSections = sections.length;
         
         for(const section of sections){
             const sectionId = section.querySelector(".section-id")?.textContent || "Unknown";
@@ -238,6 +210,11 @@ async function getCourseSeats(course){
                 totalSeats += totalCount;
                 totalOpen += openCount;
                 totalWaitlisted += waitlistCount;
+                waitlistedSections++;
+
+                if(openCount > 0){
+                    openSections++;
+                }
             }else{
                 console.warn(`Invalid data for section ${sectionId}.`);
             }
@@ -246,7 +223,10 @@ async function getCourseSeats(course){
         return {
             total: totalSeats, 
             open: totalOpen, 
-            waitlist: totalWaitlisted
+            waitlist: totalWaitlisted,
+            totalSections: totalSections,
+            waitlistedSections: waitlistedSections,
+            openSections: openSections
         };
 
     }catch(e){
