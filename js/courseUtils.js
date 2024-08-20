@@ -35,7 +35,6 @@ async function addCourseStats(){
                 if(courseGPA > 0){
                     const gpaTag = tag.cloneNode();
                     gpaTag.textContent = `🎓 ${courseGPA}`;
-                    gpaTag.title="Average GPA";
                     gpaTag.style.backgroundColor = getTagColor(courseGPA == null ? 0 : courseGPA, 4, true);
 
                     const gpaContainer = addTooltip(gpaTag, `Represents the average GPA earned by students in ${course.id}.`)
@@ -60,7 +59,6 @@ async function addCourseStats(){
                     openSeatsTag.textContent = "No seats left";
                 }
 
-                openSeatsTag.title="Seats remaining";
                 openSeatsTag.style.backgroundColor = getTagColor(sectionSeats.open, sectionSeats.total/2, false);
 
                 const openSeatsContainer = addTooltip(openSeatsTag, sectionSeats.open == 0 ? 
@@ -71,7 +69,6 @@ async function addCourseStats(){
                 if(sectionSeats.waitlist > 0){
                     const waitlistTag = tag.cloneNode();
                     waitlistTag.textContent = `${sectionSeats.waitlist} waitlisted`;
-                    waitlistTag.title="Waitlisted";
                     waitlistTag.style.backgroundColor = "#d5b60a";
 
                     const waitlistContainer = addTooltip(waitlistTag, `${sectionSeats.waitlist} student(s) waitlisted throughout ${sectionSeats.waitlistedSections} section(s).`)
@@ -124,6 +121,7 @@ async function rateInstructors(instructorsToLoad){
             try{
                 let rating=null;
                 let reviewCount=0;
+                let reviews = [];
 
                 const response = await fetch(`${basePTApi}professor?name=${instructorName}&reviews=true`); 
                 if(!response.ok){
@@ -133,14 +131,17 @@ async function rateInstructors(instructorsToLoad){
 
                     if(professorJson && professorJson.average_rating){
                         rating = (Math.round(professorJson.average_rating*100)/100).toFixed(2);
-                        reviewCount = professorJson.reviews ? professorJson.reviews.length : 0;
+                        reviews = professorJson.reviews ? professorJson.reviews : [];
+                        reviewCount = reviews.length;
+                        
                     }else{
                         console.warn(`Unable to find a rating for ${instructorName}`);
                     }
                         
                     loadedInstructors.set(instructorName, {
                         rating: rating,
-                        reviewCount: reviewCount
+                        reviewCount: reviewCount,
+                        reviews: reviews
                     })
                 }
                 
@@ -157,10 +158,10 @@ async function rateInstructors(instructorsToLoad){
         const instructorRecord = loadedInstructors.get(instructorName);
         if(instructorRecord.rating){
             const ratingTag = tag.cloneNode();
-            ratingTag.title="Instructor Rating"
             ratingTag.textContent = `\t${instructorRecord.rating}`;
             ratingTag.style.backgroundColor = getTagColor(instructorRecord.rating, 5, true);
 
+            addRatingModal(ratingTag, instructorName, instructorRecord);
             const ratingContainer = addTooltip(ratingTag, `${instructorName}'s overall professor rating from ${instructorRecord.reviewCount} review(s).`);
             instructor.insertAdjacentElement("afterend", ratingContainer);
         }

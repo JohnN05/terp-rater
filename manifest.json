@@ -10,16 +10,19 @@
     "content_scripts": [
         {
             "matches": ["https://app.testudo.umd.edu/soc/*"],
-            "css": ["css/global.css", "css/tooltip.css", "css/courseUtils.css"],
-            "js": ["js/tooltip.js", "js/courseUtils.js","js/content.js"]
+            "css": ["css/global.css", "css/tooltip.css", "css/modal.css", "css/courseUtils.css"],
+            "js": ["js/tooltip.js", "js/modal.js", "js/courseUtils.js","js/content.js"]
         }
     ],
     "host_permissions": ["https://planetterp.com/api/v1/*"],
     "web_accessible_resources": [
-
         {
-          "resources": [ "fonts/*.ttf" ],
-          "matches": [ "https://app.testudo.umd.edu/*" ]
+            "resources": [ "assets/*.ttf" ],
+            "matches": [ "https://app.testudo.umd.edu/*" ]
+        },
+        {
+            "resources": [ "assets/*.svg" ],
+            "matches": [ "https://app.testudo.umd.edu/*" ]
         }
       ]
 }

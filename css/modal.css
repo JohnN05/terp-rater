@@ -1,0 +1,68 @@
+dialog{
+    border: 0;
+}
+
+::backdrop{
+    backdrop-filter: blur(1px);
+}
+
+dialog.terp-rater-dialog{
+    box-sizing: border-box;
+    width: 70vw;
+    padding: 20px;
+    border: 0;
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+dialog.terp-rater-dialog *{
+    font-family: "Work Sans", sans-serif;
+    margin: 0;
+}
+
+dialog.terp-rater-dialog h, dialog.terp-rater-dialog h2{
+    line-height: normal;
+}
+
+dialog.terp-rater-dialog h{
+    font-size: 24px;
+}
+
+dialog.terp-rater-dialog h2{
+    font-size: 18px;
+}
+
+dialog.terp-rater-dialog ol{
+    list-style-type: none;
+    max-height: 60vh;
+    width: 100%;
+
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+dialog.terp-rater-dialog li{
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "info review";
+    padding: 15px;
+
+    border-top: 2px solid #dadfe3;
+}
+
+dialog.terp-rater-dialog li:nth-child(odd){
+    background-color: #f2f2f2;
+}
+
+#terp-rater-dialog-exit{
+    max-height: 20px;
+    max-width: 20px;
+
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}

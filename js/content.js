@@ -1,4 +1,4 @@
-const courseSectionsLoaded = 0;
+let courseSectionsLoaded = 0;
 
 const observer = new MutationObserver((mutationRecords) => {
     for(const record of mutationRecords){
