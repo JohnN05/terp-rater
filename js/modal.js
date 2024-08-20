@@ -1,38 +1,32 @@
+const maxReviews = 10;
+const loadedModals = new Map();
+
 function addRatingModal(node, name, record){
     if(!node || !name || !record){
         return;
     }
 
-    const dialog = document.createElement("dialog");
-    const exitButton = getExitButton(dialog);
-    const overview = getInstructorOverviewElement(name, record);
-    const reviewList = document.createElement("ol");
+    const dialog = loadedModals.has(name) ? loadedModals.get(name) : document.createElement("dialog");
+    
+    if(!loadedModals.has(name)){
+        dialog.className = "terp-rater-dialog";
 
-    dialog.className = "terp-rater-dialog";
+        const exitButton = getExitButton(dialog);
+        const overview = getInstructorOverviewElement(name, record);
+        const reviewList = getReviews(record);
 
-    for(const review of record.reviews){
-        const reviewContainer = document.createElement("li");
+        dialog.append(exitButton, overview, reviewList);
+        loadedModals.set(name, dialog);
 
-        const reviewMessage = document.createElement("div");
-        reviewMessage.style.gridArea = "review";
-        reviewMessage.textContent = review.review ? review.review : "";
-        
-        const reviewInfo = getReviewInfoElement(review);
+        document.body.insertAdjacentElement("afterbegin", dialog);
 
-        reviewContainer.append(reviewInfo, reviewMessage);
-        reviewList.prepend(reviewContainer);
+        dialog.addEventListener("click", (event) => {
+            if(event.target === dialog){
+                dialog.close();
+            }
+    
+        });
     }
-
-    dialog.append(exitButton, overview, reviewList);
-
-    document.body.insertAdjacentElement("afterbegin", dialog);
-
-    dialog.addEventListener("click", (event) => {
-        if(event.target === dialog){
-            dialog.close();
-        }
-
-    })
 
     node.addEventListener("click", () => {
         dialog.showModal();
@@ -97,4 +91,30 @@ function getReviewInfoElement(review){
 
     reviewInfo.append(reviewedCourse, reviewRating, expectedGrade, reviewDate);
     return reviewInfo;
+}
+
+function getReviews(record){
+    if(!record){
+        return;
+    }
+
+    const reviewList = document.createElement("ol");
+
+    const lastReview = record.reviews.length > maxReviews ? 
+    record.reviews.length - maxReviews: 0;
+    for(let i = record.reviews.length-1; i >= lastReview; i--){
+        const review = record.reviews[i];
+        const reviewContainer = document.createElement("li");
+
+        const reviewMessage = document.createElement("div");
+        reviewMessage.style.gridArea = "review";
+        reviewMessage.textContent = review.review ? review.review : "";
+        
+        const reviewInfo = getReviewInfoElement(review);
+
+        reviewContainer.append(reviewInfo, reviewMessage);
+        reviewList.append(reviewContainer);
+    }
+
+    return reviewList;
 }
