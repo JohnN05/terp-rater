@@ -3,6 +3,7 @@ const loadedInstructors = new Map();
 const basePTApi = "https://planetterp.com/api/v1/";
 const baseSocUrl = "https://app.testudo.umd.edu/soc/";
 const domParser = new DOMParser();
+const idealOpenings = 30;
 
 const tag = document.createElement("span");
 tag.className = "terp-rater-tag"
@@ -58,7 +59,8 @@ async function addCourseStats(){
                     openSeatsTag.textContent = "No seats left";
                 }
 
-                openSeatsTag.style.backgroundColor = getTagColor(sectionSeats.open, sectionSeats.total/2, false);
+                const idealSeats = sectionSeats.open > idealOpenings ? sectionSeats.open : idealOpenings;
+                openSeatsTag.style.backgroundColor = getTagColor(sectionSeats.open, idealSeats, false);
 
                 const openSeatsContainer = addTooltip(openSeatsTag, sectionSeats.open == 0 ? 
                     `There are no open seats available throughout ${course.id}'s ${sectionSeats.totalSections} section(s).`:
@@ -243,5 +245,5 @@ function getTagColor(value, maxValue, grayZero){
     }
 
     const hue = (clampedValue / maxValue) * 120;
-    return `hsl(${hue}, 80%, 35%)`;
+    return `hsl(${hue}, 95%, 35%)`;
 }

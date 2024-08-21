@@ -1,4 +1,4 @@
-dialog{
+dialog[open]{
     border: 0;
 }
 
@@ -6,7 +6,7 @@ dialog{
     backdrop-filter: blur(1px);
 }
 
-dialog.terp-rater-dialog{
+dialog[open].terp-rater-dialog{
     box-sizing: border-box;
     width: 70vw;
     padding: 20px;

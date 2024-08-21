@@ -30,28 +30,31 @@ function addTooltip(node, message){
     container.appendChild(shadow);
     container.appendChild(node);
 
+    let hideTimeout;
     node.addEventListener("mouseover", () =>{
+        if(hideTimeout){
+            clearTimeout(hideTimeout);
+        }
+
         body.style.visibility = "visible";
         arrow.style.visibility = "visible";
         shadow.style.visibility = "visible";
+
         body.classList.add('terp-rater-tooltip-visible');
         arrow.classList.add('terp-rater-tooltip-visible');
         shadow.classList.add('terp-rater-tooltip-visible');
     });
     node.addEventListener("mouseout", () => {
-        setTimeout(() => {
+        hideTimeout = setTimeout(() => {
             body.style.visibility = "hidden";
             arrow.style.visibility = "hidden";
             shadow.style.visibility = "hidden";
         }, animationDelay);
+
         body.classList.remove('terp-rater-tooltip-visible');
         arrow.classList.remove('terp-rater-tooltip-visible');
         shadow.classList.remove('terp-rater-tooltip-visible');
     });
-
-    node.style.cursor = "pointer";
-
-
 
     return container;
 }

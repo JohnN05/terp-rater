@@ -14,13 +14,26 @@
 
     display: inline-flex;
     align-items: center;
+    cursor: default;
+
+    animation: fadeIn 0.3s;
 }
 
 .terp-rater-tag.rating{
     transition: 0.3s;
+    cursor: pointer;
 }
 
 .terp-rater-tag.rating:hover{
-    filter: brightness(0.9);
+    filter: brightness(1.1);
     transform: scale(1.05)
+}
+
+@keyframes fadeIn {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
 }

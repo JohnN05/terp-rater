@@ -1,4 +1,4 @@
-const maxReviews = 10;
+const maxReviews = 15;
 const loadedModals = new Map();
 
 const star = document.createElement("img");
