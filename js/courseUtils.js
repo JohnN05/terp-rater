@@ -3,7 +3,9 @@ const loadedInstructors = new Map();
 const basePTApi = "https://planetterp.com/api/v1/";
 const baseSocUrl = "https://app.testudo.umd.edu/soc/";
 const domParser = new DOMParser();
+
 const idealOpenings = 30;
+const badGPA = 2.0;
 
 const tag = document.createElement("span");
 tag.className = "terp-rater-tag"
@@ -36,7 +38,7 @@ async function addCourseStats(){
                 if(courseGPA > 0){
                     const gpaTag = tag.cloneNode();
                     gpaTag.textContent = `🎓 ${courseGPA}`;
-                    gpaTag.style.backgroundColor = getTagColor(courseGPA == null ? 0 : courseGPA, 4, true);
+                    gpaTag.style.backgroundColor = getTagColor(courseGPA == null ? 0 : courseGPA-badGPA, 4-badGPA, true);
 
                     const gpaContainer = addTooltip(gpaTag, `Represents the average GPA earned by students in ${course.id}.`)
                     tagContainer.appendChild(gpaContainer);
