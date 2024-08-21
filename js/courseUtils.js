@@ -166,8 +166,7 @@ async function rateInstructors(instructorsToLoad){
             ratingTag.style.backgroundColor = getTagColor(instructorRecord.rating, 5, true);
 
             addRatingModal(ratingTag, instructorName, instructorRecord);
-            const ratingContainer = addTooltip(ratingTag, `${instructorName}'s overall professor rating from ${instructorRecord.reviews.length} review(s).`);
-            instructor.insertAdjacentElement("afterend", ratingContainer);
+            instructor.insertAdjacentElement("afterend", ratingTag);
         }
         
     }
