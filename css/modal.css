@@ -29,10 +29,17 @@ dialog.terp-rater-dialog h, dialog.terp-rater-dialog h2{
 
 dialog.terp-rater-dialog h{
     font-size: 24px;
+    font-weight: 600;
 }
 
 dialog.terp-rater-dialog h2{
     font-size: 18px;
+    font-weight: 500;
+}
+
+dialog.terp-rater-dialog h3{
+    font-size: 14px;
+    text-align: center;
 }
 
 dialog.terp-rater-dialog ol{
@@ -40,6 +47,7 @@ dialog.terp-rater-dialog ol{
     max-height: 60vh;
     width: 100%;
 
+    overflow-x: hidden;
     overflow-y: auto;
     scrollbar-width: thin;
 }
@@ -58,11 +66,65 @@ dialog.terp-rater-dialog li:nth-child(odd){
     background-color: #f2f2f2;
 }
 
+dialog.terp-rater-dialog .head-container{
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    gap: 10px;
+}
+
+
+
+dialog.terp-rater-dialog .starContainer{
+    display: flex;
+    max-width: 100%;
+    gap: 5px;
+}
+
+dialog.terp-rater-dialog .starContainer>*{
+    max-width: 15px;
+}
+
 #terp-rater-dialog-exit{
-    max-height: 20px;
-    max-width: 20px;
+    max-height: 15px;
+    max-width: 15px;
 
     position: absolute;
     right: 20px;
     top: 20px;
+
+    transition: 0.3s;
+}
+
+#terp-rater-more-reviews{
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+
+    display: flex;
+    justify-items: center;
+    align-items: center;
+}
+
+#terp-rater-dialog-exit:hover{
+    transform: scale(1.1);
+}
+
+#terp-rater-more-reviews>*{
+    flex: 1;
+}
+
+#terp-rater-more-reviews a{
+    text-decoration-color: black;
+    transition: 0.3s;
+}
+
+#terp-rater-more-reviews a:hover{
+    transform: scale(1.02);
+}
+
+#terp-rater-pt-icon, #terp-rater-pt-link{
+    max-height: 25px;
+    max-width: 25px;
+    outline: none;
 }

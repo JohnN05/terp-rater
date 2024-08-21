@@ -1,6 +1,19 @@
 const maxReviews = 10;
 const loadedModals = new Map();
 
+const star = document.createElement("img");
+star.src = chrome.runtime.getURL("assets/star.svg");
+star.alt = "star";
+
+const emptyStar = document.createElement("img");
+emptyStar.src = chrome.runtime.getURL("assets/empty-star.svg");
+emptyStar.alt = "empty star";
+
+const ptIcon = document.createElement("img");
+    ptIcon.id = "terp-rater-pt-icon";
+    ptIcon.src = chrome.runtime.getURL("assets/pt-logo.png");
+    ptIcon.alt = "PlanetTerp";
+
 function addRatingModal(node, name, record){
     if(!node || !name || !record){
         return;
@@ -13,7 +26,7 @@ function addRatingModal(node, name, record){
 
         const exitButton = getExitButton(dialog);
         const overview = getInstructorOverviewElement(name, record);
-        const reviewList = getReviews(record);
+        const reviewList = getReviews(name, record);
 
         dialog.append(exitButton, overview, reviewList);
         loadedModals.set(name, dialog);
@@ -47,15 +60,20 @@ function getExitButton(dialog){
 
 function getInstructorOverviewElement(name, record){
     const container = document.createElement("div");
+    const headContainer = document.createElement("div");
     const heading = document.createElement("h");
+    const ptIcon = getPTIcon(record.slug);
     const subheading1 = document.createElement("h2");
     const subheading2 = document.createElement("h2");
 
+    headContainer.className = "head-container";
     heading.textContent = name;
-    subheading1.textContent = record.reviewCount ? `${record.reviewCount} review(s)` : "No reviews";
+    headContainer.append(heading, ptIcon);
+
+    subheading1.textContent = record.reviews.length ? `${record.reviews.length} review(s)` : "No reviews";
     subheading2.textContent = record.rating ? `Average rating: ${record.rating}` : ""; 
 
-    container.append(heading, subheading1, subheading2);
+    container.append(headContainer, subheading1, subheading2);
     return container;
 }
 
@@ -71,8 +89,7 @@ function getReviewInfoElement(review){
     const reviewedCourse = document.createElement("div");
     reviewedCourse.textContent = review.course ? review.course : "N/A";
 
-    const reviewRating = document.createElement("div");
-    reviewRating.textContent = review.rating ? `${review.rating}⭐` : "N/A"
+    const reviewRating = getRatingElement(review.rating);
 
     const expectedGrade = document.createElement("div");
     if(review.expected_grade){
@@ -93,7 +110,7 @@ function getReviewInfoElement(review){
     return reviewInfo;
 }
 
-function getReviews(record){
+function getReviews(name, record){
     if(!record){
         return;
     }
@@ -116,5 +133,56 @@ function getReviews(record){
         reviewList.append(reviewContainer);
     }
 
+    if(record.reviews.length > maxReviews){
+        const reviewContainer = document.createElement("li");
+        reviewContainer.id = "terp-rater-more-reviews";
+        const ptLink = document.createElement("a");
+        ptLink.href = `https://planetterp.com/professor/${record.slug}`;
+        ptLink.target = "_blank";
+        ptLink.rel = "noreferrer";
+
+        const moreReviews = document.createElement("h3");
+        moreReviews.textContent = `Want more reviews?  Check out ${name}'s PlanetTerp`;
+        ptLink.append(moreReviews);
+
+        reviewContainer.append(ptLink);
+        reviewList.append(reviewContainer);
+    }
+
     return reviewList;
+}
+
+function getPTIcon(slug){
+    if(!slug){
+        return;
+    }
+
+    const iconLink = document.createElement("a");
+    iconLink.id = "terp-rater-pt-link";
+    iconLink.href = `https://planetterp.com/professor/${slug}`;
+    iconLink.target = "_blank";
+    iconLink.rel = "noreferrer";
+
+    iconLink.append(ptIcon.cloneNode());
+    return iconLink;
+}
+
+function getRatingElement(rating){
+    const container = document.createElement("div");
+    container.className = "starContainer";
+    
+    if(!rating){
+        return document.createElement(container);
+    }
+    
+    const ratingNum = parseInt(rating) || 0;
+
+    for(let stars = 0; stars < ratingNum; stars++){
+        container.append(star.cloneNode());
+    }
+    for(let stars = ratingNum; stars < 5; stars++){
+        container.append(emptyStar.cloneNode());
+    }
+
+    return container;
 }

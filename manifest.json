@@ -23,6 +23,10 @@
         {
             "resources": [ "assets/*.svg" ],
             "matches": [ "https://app.testudo.umd.edu/*" ]
+        },
+        {
+            "resources": [ "assets/*.png" ],
+            "matches": [ "https://app.testudo.umd.edu/*" ]
         }
       ]
 }
