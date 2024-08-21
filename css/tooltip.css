@@ -10,6 +10,7 @@
 
     transition: opacity 0.3s ease;
     opacity: 0;
+    visibility: hidden;
 }
 
 .terp-rater-tooltip{

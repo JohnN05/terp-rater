@@ -50,7 +50,6 @@ async function addCourseStats(){
 
             if(sectionSeats.total){
                 const openSeatsTag = tag.cloneNode();
-                let tooltipMessage;
                 if(sectionSeats.open > 1){
                     openSeatsTag.textContent = `${sectionSeats.open} seats left`;
                 }else if(sectionSeats.open == 1){
@@ -120,8 +119,8 @@ async function rateInstructors(instructorsToLoad){
         if(!loadedInstructors.has(instructorName)){
             try{
                 let rating=null;
-                let reviewCount=0;
                 let reviews = [];
+                let slug =  "";
 
                 const response = await fetch(`${basePTApi}professor?name=${instructorName}&reviews=true`); 
                 if(!response.ok){
@@ -132,7 +131,7 @@ async function rateInstructors(instructorsToLoad){
                     if(professorJson && professorJson.average_rating){
                         rating = (Math.round(professorJson.average_rating*100)/100).toFixed(2);
                         reviews = professorJson.reviews ? professorJson.reviews : [];
-                        reviewCount = reviews.length;
+                        slug = professorJson.slug ? professorJson.slug : "";
                         
                     }else{
                         console.warn(`Unable to find a rating for ${instructorName}`);
@@ -140,8 +139,8 @@ async function rateInstructors(instructorsToLoad){
                         
                     loadedInstructors.set(instructorName, {
                         rating: rating,
-                        reviewCount: reviewCount,
-                        reviews: reviews
+                        reviews: reviews,
+                        slug: slug
                     })
                 }
                 
@@ -158,11 +157,12 @@ async function rateInstructors(instructorsToLoad){
         const instructorRecord = loadedInstructors.get(instructorName);
         if(instructorRecord.rating){
             const ratingTag = tag.cloneNode();
+            ratingTag.classList.add("rating");
             ratingTag.textContent = `\t${instructorRecord.rating}`;
             ratingTag.style.backgroundColor = getTagColor(instructorRecord.rating, 5, true);
 
             addRatingModal(ratingTag, instructorName, instructorRecord);
-            const ratingContainer = addTooltip(ratingTag, `${instructorName}'s overall professor rating from ${instructorRecord.reviewCount} review(s).`);
+            const ratingContainer = addTooltip(ratingTag, `${instructorName}'s overall professor rating from ${instructorRecord.reviews.length} review(s).`);
             instructor.insertAdjacentElement("afterend", ratingContainer);
         }
         
