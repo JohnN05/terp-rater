@@ -5,7 +5,9 @@
     "description": "Rates your professors at UMD",
     "icons": {
         "16" : "images/favicon-16.png",
-        "32" : "images/favicon-32.png"
+        "32" : "images/favicon-32.png",
+        "48" : "images/favicon-48.png",
+        "128" : "images/favicon-128.png"
     },
     "content_scripts": [
         {
