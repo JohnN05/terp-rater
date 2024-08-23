@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
     "name": "Terp Rater",
-    "version": "1.0",
-    "description": "Rates your professors at UMD",
+    "version": "0.0.1",
+    "description": "Enhance UMD's SOC by providing additional insights such as average GPA and instructor rating.",
     "icons": {
         "16" : "assets/favicon-16.png",
         "32" : "assets/favicon-32.png",
