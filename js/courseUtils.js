@@ -1,83 +1,38 @@
-const courses = document.body.getElementsByClassName("course");
-const loadedInstructors = new Map();
-const basePTApi = "https://planetterp.com/api/v1/";
-const baseSocUrl = "https://app.testudo.umd.edu/soc/";
-const domParser = new DOMParser();
+const courseElements = document.body.getElementsByClassName("course");
+const semesterValue = document.getElementById("term-id-input")?.value;
+const tagTemplate = document.createElement("span");
+tagTemplate.className = "terp-rater-tag"
 
-const idealOpenings = 30;
-const badGPA = 2.0;
-
-const tag = document.createElement("span");
-tag.className = "terp-rater-tag"
-
-const semester = document.getElementById("term-id-input")?.value;
-if(!semester){
+if(!semesterValue){
     console.warn("Semester not found.");
 }
 
-async function addCourseStats(){
-    if(!courses || courses.length == 0){
+const API_BASE_PLANET_TERP = "https://planetterp.com/api/v1/";
+const API_BASE_SCHEDULE_OF_CLASSES = "https://app.testudo.umd.edu/soc/";
+
+const loadedInstructors = new Map();
+const domParser = new DOMParser();
+
+const IDEAL_OPENINGS = 30;
+const POOR_GPA_THRESHOLD = 2.0;
+
+async function addCourseTags(){
+    if(!courseElements || courseElements.length == 0){
         console.warn("No courses available for processing.");
         return;
     }
 
-    for(const course of courses){
+    for(const course of courseElements){
         try{
             const description = course.querySelector(".course-basic-info-container");
             if(!description){
                 console.warn(`Description container not found for ${course.id}`);
+                continue;
             }
 
-            const courseTitle = course.querySelector(".course-title");
-            const tagContainer = document.createElement("span");
-            tagContainer.className = "terp-rater-tag-container";
-            courseTitle.insertAdjacentElement("afterend", tagContainer);
-            
-            if(courseTitle){
-                const courseGPA = await getCourseGPA(course.id)
-                if(courseGPA > 0){
-                    const gpaTag = tag.cloneNode();
-                    gpaTag.textContent = `🎓 ${courseGPA}`;
-                    gpaTag.style.backgroundColor = getTagColor(courseGPA == null ? 0 : courseGPA-badGPA, 4-badGPA, true);
-
-                    const gpaContainer = addTooltip(gpaTag, `Represents the average GPA earned by students in ${course.id}.`)
-                    tagContainer.appendChild(gpaContainer);
-                }
-                
-            }
-            
-            const sectionSeats = await getCourseSeats(course);
-            if(!sectionSeats){
-                console.warn(`Failed to get section data for ${course.id}`);
-            }
-
-            if(sectionSeats.total){
-                const openSeatsTag = tag.cloneNode();
-                if(sectionSeats.open > 1){
-                    openSeatsTag.textContent = `${sectionSeats.open} seats left`;
-                }else if(sectionSeats.open == 1){
-                    openSeatsTag.textContent = `${sectionSeats.open} seat left`;
-                }else{
-                    openSeatsTag.textContent = "No seats left";
-                }
-
-                const idealSeats = sectionSeats.open > idealOpenings ? sectionSeats.open : idealOpenings;
-                openSeatsTag.style.backgroundColor = getTagColor(sectionSeats.open, idealSeats, false);
-
-                const openSeatsContainer = addTooltip(openSeatsTag, sectionSeats.open == 0 ? 
-                    `There are no open seats available throughout ${course.id}'s ${sectionSeats.totalSections} section(s).`:
-                    `${sectionSeats.open} open seats left among ${sectionSeats.openSections} section(s).`);
-                tagContainer.appendChild(openSeatsContainer);
-
-                if(sectionSeats.waitlist > 0){
-                    const waitlistTag = tag.cloneNode();
-                    waitlistTag.textContent = `${sectionSeats.waitlist} waitlisted`;
-                    waitlistTag.style.backgroundColor = "#d5b60a";
-
-                    const waitlistContainer = addTooltip(waitlistTag, `${sectionSeats.waitlist} student(s) waitlisted throughout ${sectionSeats.waitlistedSections} section(s).`)
-                    tagContainer.appendChild(waitlistContainer);
-                }
-            }
+            const tagContainer = createTagContainer(course);
+            await addGpaTag(course, tagContainer);
+            await addSeatsTags(course, tagContainer);
 
             const instructors = course.getElementsByClassName("section-instructor");
             rateInstructors(instructors);
@@ -88,9 +43,71 @@ async function addCourseStats(){
     }
 }
 
-async function getCourseGPA(courseId){
+function createTagContainer(course){
+    const courseTitle = course.querySelector(".course-title");
+    const tagContainer = document.createElement("span");
+    tagContainer.className = "terp-rater-tag-container";
+    courseTitle.insertAdjacentElement("afterend", tagContainer);
+
+    return tagContainer;
+}
+
+function createTag(textContent, backgroundColor){
+    const tag = tagTemplate.cloneNode();
+    tag.textContent = textContent;
+    tag.style.backgroundColor = backgroundColor;
+    return tag;
+}
+
+async function addGpaTag(course, tagContainer){
+    const courseGpa = await getCourseGpa(course.id);
+
+    if(courseGpa > 0){
+        const gpaTag = createTag(`🎓 ${courseGpa}`, getTagColor(courseGpa - POOR_GPA_THRESHOLD, 4 - POOR_GPA_THRESHOLD, true));
+        const gpaContainer = addTooltip(gpaTag, `Represents the average GPA earned by students in ${course.id}.`);
+        tagContainer.append(gpaContainer);
+    }
+}
+
+async function addSeatsTags(course, tagContainer){
+    const sectionSeats = await getCourseSeats(course);
+    if(!sectionSeats){
+        console.warn(`Failed to get section data for ${course.id}`);
+        return;
+    }
+
+    if(sectionSeats.total){
+        appendOpenSeatsTag(sectionSeats, tagContainer, course.id);
+
+        if(sectionSeats.waitlist > 0){
+            appendWaitlistTag(sectionSeats, tagContainer);
+        }
+    }
+}
+
+function appendOpenSeatsTag(sectionSeats, tagContainer, courseId){
+    const openSeatsText = sectionSeats.open > 1 ? `${sectionSeats.open} seats left` :
+    sectionSeats.open === 1 ? "1 seat left" : "No seats left";
+
+    const idealSeats = sectionSeats.open > IDEAL_OPENINGS ? sectionSeats.open : IDEAL_OPENINGS;
+
+    const openSeatsTag = createTag(openSeatsText, getTagColor(sectionSeats.open, idealSeats, false));
+    const openSeatsContainer = addTooltip(openSeatsTag, sectionSeats.open == 0 ? 
+        `There are no open seats available throughout ${courseId}'s ${sectionSeats.totalSections} section(s).`:
+        `${sectionSeats.open} open seats left among ${sectionSeats.openSections} section(s).`);
+    
+    tagContainer.append(openSeatsContainer);
+}
+
+function appendWaitlistTag(sectionSeats, tagContainer){
+    const waitlistTag = createTag(`${sectionSeats.waitlist} waitlisted`, "#d5b60a");
+    const waitlistContainer = addTooltip(waitlistTag, `${sectionSeats.waitlist} student(s) waitlisted throughout ${sectionSeats.waitlistedSections} section(s).`)
+    tagContainer.appendChild(waitlistContainer);
+}
+
+async function getCourseGpa(courseId){
     try{
-        const response = await fetch(`${basePTApi}course?name=${courseId}`); 
+        const response = await fetch(`${API_BASE_PLANET_TERP}course?name=${courseId}`); 
         if(!response.ok){
             return null;
         }else{
@@ -102,74 +119,67 @@ async function getCourseGPA(courseId){
         }
     }catch(e){
         console.warn(`Unable to find a record for ${courseId}`);
+        return null;
     }
-    return null;
-    
 }
 
 async function rateInstructors(instructorsToLoad){
 
-    if(!instructorsToLoad){
+    if(!instructorsToLoad || instructorsToLoad.length === 0){
         console.warn("No instructors provided.");
+        return;
     }
    
     for(const instructor of instructorsToLoad){
         const instructorName = instructor.innerText;
 
-        if(instructorName.includes("TBA")){
-            continue;
+        if(instructorName && !instructorName.includes("TBA")){
+            await processInstructor(instructorName, instructor);
         }
-
-        if(!loadedInstructors.has(instructorName)){
-            try{
-                let rating=null;
-                let reviews = [];
-                let slug =  "";
-
-                const response = await fetch(`${basePTApi}professor?name=${instructorName}&reviews=true`); 
-                if(!response.ok){
-                    throw new Error(`${instructorName} doesn't have a record on PlanetTerp.`);
-                }else{
-                    const professorJson = await response.json();
-
-                    if(professorJson && professorJson.average_rating){
-                        rating = (Math.round(professorJson.average_rating*100)/100).toFixed(2);
-                        reviews = professorJson.reviews ? professorJson.reviews : [];
-                        slug = professorJson.slug ? professorJson.slug : "";
-                        
-                    }else{
-                        console.warn(`Unable to find a rating for ${instructorName}`);
-                    }
-                        
-                    loadedInstructors.set(instructorName, {
-                        rating: rating,
-                        reviews: reviews,
-                        slug: slug
-                    })
-                }
-                
-            }catch(e){
-                loadedInstructors.set(instructorName,
-                    {
-                        rating: null
-                    }
-                )
-                console.warn(`Unable to find a record for ${instructorName}`);
-            }
-        }
-
-        const instructorRecord = loadedInstructors.get(instructorName);
-        if(instructorRecord.rating){
-            const ratingTag = tag.cloneNode();
-            ratingTag.classList.add("rating");
-            ratingTag.textContent = `\t${instructorRecord.rating}`;
-            ratingTag.style.backgroundColor = getTagColor(instructorRecord.rating, 5, true);
-
-            addRatingModal(ratingTag, instructorName, instructorRecord);
-            instructor.insertAdjacentElement("afterend", ratingTag);
-        }
-        
     }
+}
+
+async function processInstructor(instructorName, instructorElement){
+    if(!loadedInstructors.has(instructorName)){
+        await fetchInstructorData(instructorName);
+    }
+
+    const instructorRecord = loadedInstructors.get(instructorName);
+    if(instructorRecord?.rating){
+        appendRatingTag(instructorRecord, instructorElement, instructorName);
+    }
+}
+
+async function fetchInstructorData(instructorName){
+    try{
+        const response = await fetch(`${API_BASE_PLANET_TERP}professor?name=${instructorName}&reviews=true`);
+        if(!response.ok){
+            throw new Error(`${instructorName} doesn't have a record on PlanetTerp.`);
+        } 
+
+        const professorJson = await response.json();
+        const rating = professorJson?.average_rating 
+        ? (Math.round(professorJson.average_rating*100)/100).toFixed(2)
+        : null;
+        const reviews = professorJson?.reviews || [];
+        const slug = professorJson?.slug || "";
+
+        loadedInstructors.set(instructorName, {rating, reviews, slug});
+
+    }catch(error){
+        loadedInstructors.set(instructorName, {rating: null});
+        console.warn(`Unable to find a record for ${instructorName}`);
+    }
+}
+
+function appendRatingTag(instructorRecord, instructorElement, instructorName){
+    const ratingTag = tagTemplate.cloneNode();
+    ratingTag.classList.add("rating");
+    ratingTag.textContent = `\t${instructorRecord.rating}`;
+    ratingTag.style.backgroundColor = getTagColor(instructorRecord.rating, 5, true);
+
+    addRatingModal(ratingTag, instructorName, instructorRecord);
+    instructorElement.insertAdjacentElement("afterend", ratingTag);
 }
     
 //ALLOW FILTER HANDLING (Blended options, hybrid, etc.)
@@ -180,64 +190,87 @@ async function getCourseSeats(course){
     }
 
     try{
-        const response = await fetch(`${baseSocUrl}${semester}/sections?courseIds=${course.id}`);
+        const courseData = await fetchCourseData(course.id);
+        if(!courseData) return null;
 
+        const sections = courseData.getElementsByClassName("section-info-container");
+        return calculateSeatAvailability(sections);
+
+    }catch(error){
+        console.error(`Error fetching course data for ${course.id}.`)
+        return null;
+    }
+}
+
+async function fetchCourseData(courseId) {
+    try{
+        const response = await fetch(`${API_BASE_SCHEDULE_OF_CLASSES}${semesterValue}/sections?courseIds=${courseId}`);
         if(!response.ok){
             console.error(`HTTP Error: Status: ${response.status}`);
             return null;
         }
 
         const courseText = await response.text();
-        const requestHtml = domParser.parseFromString(courseText, "text/html");
+        return domParser.parseFromString(courseText, "text/html");
 
-        let totalSeats = 0;
-        let totalOpen = 0;
-        let totalWaitlisted = 0;
-        let openSections = 0;
-        let waitlistedSections = 0;
-        
-        const sections = requestHtml.getElementsByClassName("section-info-container");
-        const totalSections = sections.length;
-        
-        for(const section of sections){
-            const sectionId = section.querySelector(".section-id")?.textContent || "Unknown";
-            const totalCount = parseInt(section.querySelector(".total-seats-count")?.textContent) || 0;
-            const openCount = parseInt(section.querySelector(".open-seats-count")?.textContent) || 0;
-            
-            let waitlistCount = 0;
-            const waitlistElements = section.querySelectorAll(".waitlist-count");
-            for(const waitlist of waitlistElements){
-                waitlistCount += parseInt(waitlist.innerText) || 0;
-            }
-
-            if(!isNaN(openCount) && !isNaN(totalCount) && !isNaN(waitlistCount)){
-                totalSeats += totalCount;
-                totalOpen += openCount;
-                totalWaitlisted += waitlistCount;
-                waitlistedSections++;
-
-                if(openCount > 0){
-                    openSections++;
-                }
-            }else{
-                console.warn(`Invalid data for section ${sectionId}.`);
-            }
-        }
-
-        return {
-            total: totalSeats, 
-            open: totalOpen, 
-            waitlist: totalWaitlisted,
-            totalSections: totalSections,
-            waitlistedSections: waitlistedSections,
-            openSections: openSections
-        };
-
-    }catch(e){
-        console.error(`Error fetching course data for ${course.id}.`)
+    }catch(error){
+        console.error(`Failed to fetch course data for ${courseId}: ${error.message}`);
         return null;
     }
 }
+
+function calculateSeatAvailability(sections){
+    
+    let totalSeats = 0;
+    let totalOpen = 0;
+    let totalWaitlisted = 0;
+    let openSections = 0;
+    let waitlistedSections = 0;
+
+    for(const section of sections){
+        
+        const sectionData = getSectionData(section);
+        
+        if(sectionData){
+            totalSeats += sectionData.totalCount;
+            totalOpen += sectionData.openCount;
+            totalWaitlisted += sectionData.waitlistCount;
+
+            if(sectionData.openCount > 0) openSections++;
+            if(sectionData.waitlistCount > 0) waitlistedSections++;
+            
+        }else{
+            const sectionId = section.querySelector(".section-id")?.textContent || "Unknown";
+            console.warn(`Invalid data for section ${sectionId}.`);
+        }
+        
+    }
+
+    return {
+        total: totalSeats,
+        open: totalOpen,
+        waitlist: totalWaitlisted,
+        totalSections: sections.length,
+        openSections,
+        waitlistedSections
+    }
+}
+
+function getSectionData(section){
+    const totalCount = parseInt(section.querySelector(".total-seats-count")?.textContent) || 0;
+    const openCount = parseInt(section.querySelector(".open-seats-count")?.textContent) || 0;
+    
+    let waitlistCount = 0;
+    section.querySelectorAll(".waitlist-count").forEach(waitlistElement => {
+        waitlistCount += parseInt(waitlistElement.innerText) || 0;
+    });
+
+    if(isNaN(totalCount) || isNaN(openCount) || isNaN(waitlistCount)) return null;
+
+    return {totalCount, openCount, waitlistCount};
+}
+
+
 
 function getTagColor(value, maxValue, grayZero){
     const clampedValue = Math.min(Math.max(value, 0), maxValue)
