@@ -4,18 +4,21 @@
     "version": "1.0",
     "description": "Rates your professors at UMD",
     "icons": {
-        "16" : "images/favicon-16.png",
-        "32" : "images/favicon-32.png",
-        "48" : "images/favicon-48.png",
-        "128" : "images/favicon-128.png"
+        "16" : "assets/favicon-16.png",
+        "32" : "assets/favicon-32.png",
+        "48" : "assets/favicon-48.png",
+        "128" : "assets/favicon-128.png"
     },
     "content_scripts": [
         {
             "matches": ["https://app.testudo.umd.edu/soc/*"],
-            "css": ["css/global.css", "css/tooltip.css", "css/modal.css", "css/courseUtils.css"],
+            "css": ["css/global.css", "css/tooltip.css", "css/modal.css", "css/tag.css"],
             "js": ["js/tag.js", "js/tooltip.js", "js/modal.js", "js/courseUtils.js","js/content.js"]
         }
     ],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+    },
     "host_permissions": ["https://planetterp.com/api/v1/*"],
     "web_accessible_resources": [
         {
