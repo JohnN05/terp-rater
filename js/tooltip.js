@@ -27,7 +27,6 @@ const tooltipElements = {
 function addTooltip(node, message){
     if(!node) return;
 
-
     const container = tooltipElements.container.cloneNode();
     const body = tooltipElements.body.cloneNode();
     const arrow = tooltipElements.arrow.cloneNode();
@@ -48,37 +47,34 @@ function setupTooltipEvents(body, arrow, shadow, node){
     });
 
     node.addEventListener("mouseout", () => {
-        removeClass(body, arrow, shadow, TOOLTIP_CLASSES.visible);
+        removeClass([body, arrow, shadow], TOOLTIP_CLASSES.visible);
         hideTimeout = setTimeout(() => hideTooltip(body, arrow, shadow), ANIMATION_DELAY);
     })
 }
 
 function showTooltip(body, arrow, shadow){
-    setVisibility(body, arrow, shadow, "visible");
-    addClass(body, arrow, shadow, TOOLTIP_CLASSES.visible);
+    setVisibility([body, arrow, shadow], "visible");
+    addClass([body, arrow, shadow], TOOLTIP_CLASSES.visible);
 }
 
 function hideTooltip(body, arrow, shadow){
-    setVisibility(body, arrow, shadow, "hidden");
+    setVisibility([body, arrow, shadow] , "hidden");
 }
 
-function setVisibility(...elements){
-    const visibility = arguments[arguments.length - 1];
-    elements.slice(0, -1).forEach(element => {
+function setVisibility(elements, visibility){
+    elements.forEach(element => {
         element.style.visibility = visibility;
     });
 }
 
-function addClass(...elements){
-    const className = arguments[arguments.length - 1];
-    elements.slice(0, -1).forEach(element => {
+function addClass(elements, className){
+    elements.forEach(element => {
         element.classList.add(className);
     })
 }
 
-function removeClass(...elements){
-    const className = arguments[arguments.length - 1];
-    elements.slice(0, -1).forEach(element => {
+function removeClass(elements, className){
+    elements.forEach(element => {
         element.classList.remove(className);
     })
 }

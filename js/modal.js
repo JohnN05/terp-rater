@@ -122,7 +122,7 @@ function createReviewInfo(review){
 function createExpectedGradeElement(expectedGrade){
     const gradeElement = document.createElement("div");
     if(expectedGrade){
-        const prefix = ["A", "E"].includes(expectedGrade.charAt(0) ? "an" : "a");
+        const prefix = ["A", "E"].includes(expectedGrade.charAt(0)) ? "an" : "a";
         gradeElement.textContent = `Expecting ${prefix} ${expectedGrade}`;
     }
     return gradeElement;
