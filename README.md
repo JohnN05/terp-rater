@@ -27,3 +27,6 @@ If you found an issue or would to submit improvements to this project, please su
 
 ## Authors
 - [JohnN05](https://github.com/JohnN05) - Developer
+
+## License
+This project is licensed under **Apache-2.0** see the [LICENSE](LICENSE) filer for details.
