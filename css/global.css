@@ -15,4 +15,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
+
+    max-width: 200px;
+    row-gap: 0.5em;
 }
