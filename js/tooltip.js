@@ -46,7 +46,7 @@ function setupTooltipEvents(body, arrow, shadow, node){
         showTooltip(body, arrow, shadow);
     });
 
-    node.addEventListener("mouseout", () => {
+    node.addEventListener("mouseleave", () => {
         removeClass([body, arrow, shadow], TOOLTIP_CLASSES.visible);
         hideTimeout = setTimeout(() => hideTooltip(body, arrow, shadow), ANIMATION_DELAY);
     })

@@ -55,7 +55,7 @@ function createInstructorOverviewElement(name, record){
     const headContainer = document.createElement("div");
     headContainer.className = "head-container";
 
-    const heading = document.createElement("h");
+    const heading = document.createElement("h2");
     heading.textContent = name;
 
     const ptIcon = getPTIcon(record.slug);
@@ -63,7 +63,8 @@ function createInstructorOverviewElement(name, record){
     const subheading1 = createSubheading(`${record.reviews.length} review(s)`, "No reviews")
     const subheading2 = createSubheading(`Average rating: ${record.rating}`, "No ratings");
     
-    headContainer.append(heading, ptIcon);
+    if(ptIcon) headContainer.append(heading, ptIcon);
+    else headContainer.append(heading);
     container.append(headContainer, subheading1, subheading2);
 
     return container;
@@ -175,7 +176,7 @@ function createRatingElement(rating){
     container.className = "starContainer";
     
     if(!rating){
-        return document.createElement(container);
+        return container;
     }
     
     const ratingNum = parseInt(rating) || 0;

@@ -69,7 +69,7 @@ async function rateInstructors(instructorsToLoad){
     }
    
     for(const instructor of instructorsToLoad){
-        const instructorName = instructor.innerText;
+        const instructorName = instructor.innerText.trim();
 
         if(instructorName && !instructorName.includes("TBA")){
             await processInstructor(instructorName, instructor);
@@ -185,15 +185,15 @@ function calculateSeatAvailability(sections){
 }
 
 function getSectionData(section){
-    const totalCount = parseInt(section.querySelector(".total-seats-count")?.textContent) || 0;
-    const openCount = parseInt(section.querySelector(".open-seats-count")?.textContent) || 0;
-    
+    const totalCount = parseInt(section.querySelector(".total-seats-count")?.textContent);
+    const openCount = parseInt(section.querySelector(".open-seats-count")?.textContent);
+
+    if(isNaN(totalCount) || isNaN(openCount)) return null;
+
     let waitlistCount = 0;
     section.querySelectorAll(".waitlist-count").forEach(waitlistElement => {
         waitlistCount += parseInt(waitlistElement.innerText) || 0;
     });
-
-    if(isNaN(totalCount) || isNaN(openCount) || isNaN(waitlistCount)) return null;
 
     return {totalCount, openCount, waitlistCount};
 }
