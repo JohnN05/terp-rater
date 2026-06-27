@@ -54,10 +54,10 @@ function appendOpenSeatsTag(sectionSeats, tagContainer, courseId){
     const idealSeats = sectionSeats.open > IDEAL_OPENINGS ? sectionSeats.open : IDEAL_OPENINGS;
 
     const openSeatsTag = createTag(openSeatsText, getTagColor(sectionSeats.open, idealSeats, false));
-    const openSeatsContainer = addTooltip(openSeatsTag, sectionSeats.open == 0 ? 
+    const openSeatsContainer = addTooltip(openSeatsTag, sectionSeats.open == 0 ?
         `There are no open seats available throughout ${courseId}'s ${sectionSeats.totalSections} section(s).`:
         `${sectionSeats.open} open seats left among ${sectionSeats.openSections} section(s).`);
-    
+
     tagContainer.append(openSeatsContainer);
 }
 

@@ -7,7 +7,7 @@ function showPlanetTerpDownBanner() {
     banner.className = "terp-rater-api-banner";
 
     const msg = document.createElement("span");
-    msg.textContent = "⚠ PlanetTerp unavailable — GPA & rating data may be missing";
+    msg.textContent = "⚠ PlanetTerp API down";
 
     const closeBtn = document.createElement("button");
     closeBtn.textContent = "✕";
@@ -75,8 +75,9 @@ async function addCourseTags(){
 
 async function getCourseGpa(courseId){
     try{
-        const response = await fetch(`${API_BASE_PLANET_TERP}course?name=${courseId}`); 
+        const response = await fetch(`${API_BASE_PLANET_TERP}course?name=${courseId}`);
         if(!response.ok){
+            if(response.status >= 500) showPlanetTerpDownBanner();
             return null;
         }else{
             const courseJson = await response.json();
@@ -86,6 +87,7 @@ async function getCourseGpa(courseId){
             }
         }
     }catch(e){
+        if(e instanceof TypeError) showPlanetTerpDownBanner();
         console.warn(`Unable to find a record for ${courseId}`);
         return null;
     }
@@ -123,6 +125,7 @@ async function fetchInstructorData(instructorName){
     try{
         const response = await fetch(`${API_BASE_PLANET_TERP}professor?name=${instructorName}&reviews=true`);
         if(!response.ok){
+            if(response.status >= 500) showPlanetTerpDownBanner();
             throw new Error(`${instructorName} doesn't have a record on PlanetTerp.`);
         } 
 
@@ -136,6 +139,7 @@ async function fetchInstructorData(instructorName){
         loadedInstructors.set(instructorName, {rating, reviews, slug});
 
     }catch(error){
+        if(error instanceof TypeError) showPlanetTerpDownBanner();
         loadedInstructors.set(instructorName, {rating: null});
         console.warn(`Unable to find a record for ${instructorName}`);
     }
