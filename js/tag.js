@@ -24,25 +24,22 @@ function createTag(textContent, backgroundColor){
     return tag;
 }
 
-async function addGpaTag(course, tagContainer){
-    const courseGpa = await getCourseGpa(course.id);
-
+function addGpaTag(courseGpa, courseId, tagContainer){
     if(courseGpa > 0){
         const gpaTag = createTag(`🎓 ${courseGpa}`, getTagColor(courseGpa - POOR_GPA_THRESHOLD, 4 - POOR_GPA_THRESHOLD, true));
-        const gpaContainer = addTooltip(gpaTag, `Represents the average GPA earned by students in ${course.id}.`);
+        const gpaContainer = addTooltip(gpaTag, `Represents the average GPA earned by students in ${courseId}.`);
         tagContainer.append(gpaContainer);
     }
 }
 
-async function addSeatsTags(course, tagContainer){
-    const sectionSeats = await getCourseSeats(course);
+function addSeatsTags(sectionSeats, courseId, tagContainer){
     if(!sectionSeats){
-        console.warn(`Failed to get section data for ${course.id}`);
+        console.warn(`Failed to get section data for ${courseId}`);
         return;
     }
 
     if(sectionSeats.total){
-        appendOpenSeatsTag(sectionSeats, tagContainer, course.id);
+        appendOpenSeatsTag(sectionSeats, tagContainer, courseId);
 
         if(sectionSeats.waitlist > 0){
             appendWaitlistTag(sectionSeats, tagContainer);

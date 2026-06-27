@@ -2,7 +2,7 @@
     --tooltip-distance: 140%;
 }
 
-.terp-rater-tooltip, .terp-rater-tooltip-arrow{
+.terp-rater-tooltip{
     box-sizing: border-box;
     position: absolute;
     transform: translateX(-50%);
@@ -11,10 +11,8 @@
     transition: opacity 0.3s ease;
     opacity: 0;
     visibility: hidden;
-}
 
-.terp-rater-tooltip{
-    bottom: calc(var(--tooltip-distance) + 9px);
+    bottom: calc(var(--tooltip-distance) + 10px);
     z-index: 1;
 
     padding: 3px 5px;
@@ -31,22 +29,18 @@
     filter: drop-shadow(2px 2px 2px black);
 }
 
-.terp-rater-tooltip-arrow{
-    bottom: var(--tooltip-distance);
-    z-index: 1;
-
+.terp-rater-tooltip::after{
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
     width: 0;
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-top: 10px solid white;
 }
-
-.terp-rater-tooltip-arrow.shadow{
-    filter: drop-shadow(2px 2px 2px black);
-    z-index: 0;
-}
-
 
 .terp-rater-tooltip-visible{
     opacity: 1;

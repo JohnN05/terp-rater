@@ -11,6 +11,7 @@ const API_BASE_PLANET_TERP = "https://planetterp.com/api/v1/";
 const API_BASE_SCHEDULE_OF_CLASSES = "https://app.testudo.umd.edu/soc/";
 
 const loadedInstructors = new Map();
+const pendingInstructorFetches = new Map();
 const domParser = new DOMParser();
 
 const IDEAL_OPENINGS = 30;
@@ -22,25 +23,29 @@ async function addCourseTags(){
         return;
     }
 
-    for(const course of courseElements){
+    await Promise.all(Array.from(courseElements).map(async course => {
         try{
             const description = course.querySelector(".course-basic-info-container");
             if(!description){
                 console.warn(`Description container not found for ${course.id}`);
-                continue;
+                return;
             }
 
             const tagContainer = createTagContainer(course);
-            await addGpaTag(course, tagContainer);
-            await addSeatsTags(course, tagContainer);
+            const [courseGpa, sectionSeats] = await Promise.all([
+                getCourseGpa(course.id),
+                getCourseSeats(course)
+            ]);
+            addGpaTag(courseGpa, course.id, tagContainer);
+            addSeatsTags(sectionSeats, course.id, tagContainer);
 
             const instructors = course.getElementsByClassName("section-instructor");
             rateInstructors(instructors);
 
         }catch(e){
             console.error(`Error processing ${course.id}: ${e}`)
-        }   
-    }
+        }
+    }));
 }
 
 async function getCourseGpa(courseId){
@@ -62,24 +67,25 @@ async function getCourseGpa(courseId){
 }
 
 async function rateInstructors(instructorsToLoad){
-
     if(!instructorsToLoad || instructorsToLoad.length === 0){
         console.warn("No instructors provided.");
         return;
     }
-   
-    for(const instructor of instructorsToLoad){
-        const instructorName = instructor.innerText.trim();
 
+    await Promise.all(Array.from(instructorsToLoad).map(instructor => {
+        const instructorName = instructor.innerText.trim();
         if(instructorName && !instructorName.includes("TBA")){
-            await processInstructor(instructorName, instructor);
+            return processInstructor(instructorName, instructor);
         }
-    }
+    }));
 }
 
 async function processInstructor(instructorName, instructorElement){
     if(!loadedInstructors.has(instructorName)){
-        await fetchInstructorData(instructorName);
+        if(!pendingInstructorFetches.has(instructorName)){
+            pendingInstructorFetches.set(instructorName, fetchInstructorData(instructorName));
+        }
+        await pendingInstructorFetches.get(instructorName);
     }
 
     const instructorRecord = loadedInstructors.get(instructorName);
