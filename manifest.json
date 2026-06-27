@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Terp Rater",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Enhance UMD's SOC by providing additional insights such as average GPA and instructor rating.",
     "icons": {
         "16" : "assets/favicon-16.png",
@@ -9,11 +9,21 @@
         "48" : "assets/favicon-48.png",
         "128" : "assets/favicon-128.png"
     },
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "Terp Rater Bookmarks",
+        "default_icon": {
+            "16": "assets/favicon-16.png",
+            "32": "assets/favicon-32.png",
+            "48": "assets/favicon-48.png"
+        }
+    },
+    "permissions": ["storage"],
     "content_scripts": [
         {
             "matches": ["https://app.testudo.umd.edu/soc/*"],
-            "css": ["css/global.css", "css/tooltip.css", "css/modal.css", "css/tag.css"],
-            "js": ["js/tag.js", "js/tooltip.js", "js/modal.js", "js/courseUtils.js","js/content.js"]
+            "css": ["css/global.css", "css/tooltip.css", "css/modal.css", "css/tag.css", "css/sort.css"],
+            "js": ["js/tag.js", "js/tooltip.js", "js/modal.js", "js/courseUtils.js", "js/sort.js", "js/bookmark.js", "js/content.js"]
         }
     ],
     "content_security_policy": {

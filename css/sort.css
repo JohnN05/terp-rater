@@ -1,0 +1,90 @@
+.tr-sort-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    margin-bottom: 4px;
+    background: #1E2432;
+    border-radius: 8px;
+    font-family: "Work Sans", sans-serif;
+}
+
+.tr-sort-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-right: 2px;
+    flex-shrink: 0;
+}
+
+.tr-sort-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.65);
+    font-family: "Work Sans", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    line-height: 18px;
+    white-space: nowrap;
+}
+
+.tr-sort-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.tr-sort-btn.tr-sort-active {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.tr-sort-hide-full {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: "Work Sans", sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    margin-left: auto;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.tr-sort-hide-full input[type="checkbox"] {
+    cursor: pointer;
+    margin: 0;
+    accent-color: #5b8ef0;
+}
+
+/* Bookmark button — inline next to section number */
+.tr-bookmark-btn {
+    display: inline-block;
+    vertical-align: middle;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    color: #BBBBBB;
+    line-height: 1;
+    padding: 0 0 1px 5px;
+    transition: color 0.15s, transform 0.15s;
+}
+
+.tr-bookmark-btn:hover {
+    color: #d5a000;
+    transform: scale(1.2);
+}
+
+.tr-bookmark-btn.tr-bookmark-active {
+    color: #d5a000;
+}

@@ -81,4 +81,12 @@ function appendRatingTag(instructorRecord, instructorElement, instructorName){
     instructorElement.parentNode.insertBefore(wrapper, instructorElement);
     wrapper.appendChild(instructorElement);
     wrapper.appendChild(ratingContainer);
+
+    const sectionInfoContainer = instructorElement.closest('.section-info-container');
+    if (sectionInfoContainer) {
+        sectionInfoContainer.setAttribute('data-tr-rating', instructorRecord.rating);
+        // Fix #2: if user already sorted by rating, re-sort now that this value is available
+        const sectionsContainer = sectionInfoContainer.closest('.sections-container');
+        if (sectionsContainer) notifyRatingLoaded(sectionsContainer);
+    }
 }

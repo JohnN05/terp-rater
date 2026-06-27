@@ -42,6 +42,12 @@ async function addCourseTags(){
             const instructors = course.getElementsByClassName("section-instructor");
             rateInstructors(instructors);
 
+            const sectionsContainer = course.querySelector('.sections-container');
+            if(sectionsContainer){
+                injectSortBar(sectionsContainer);
+                injectBookmarkButtons(sectionsContainer);
+            }
+
         }catch(e){
             console.error(`Error processing ${course.id}: ${e}`)
         }

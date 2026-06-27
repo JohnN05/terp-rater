@@ -1,0 +1,150 @@
+@font-face {
+    font-family: "Work Sans";
+    font-style: normal;
+    font-weight: 400 700;
+    src: url('assets/WorkSans.ttf') format('truetype');
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Work Sans", sans-serif;
+    background: #F0F2F5;
+    width: 360px;
+    min-height: 80px;
+    max-height: 500px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #C8CDD6 #F0F2F5;
+}
+
+header {
+    background: #1B2845;
+    padding: 12px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+header h1 {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.02em;
+}
+
+#bookmark-list {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.empty-state {
+    font-size: 12px;
+    color: #6B7280;
+    text-align: center;
+    padding: 24px 0;
+}
+
+.clear-all-btn {
+    align-self: flex-end;
+    background: transparent;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    color: #6B7280;
+    font-family: "Work Sans", sans-serif;
+    font-size: 11px;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.clear-all-btn:hover {
+    color: #E21833;
+    border-color: #E21833;
+}
+
+.course-group {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #E1E4EA;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.course-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #1B2845;
+}
+
+.course-id {
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.04em;
+}
+
+.semester {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.section-row {
+    display: grid;
+    grid-template-columns: 46px 1fr auto auto 22px;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-top: 1px solid #E1E4EA;
+    font-size: 11px;
+}
+
+.section-num {
+    font-weight: 700;
+    color: #1B2845;
+    white-space: nowrap;
+}
+
+.instructor {
+    color: #374151;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rating {
+    color: #b08000;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.seats {
+    color: #6B7280;
+    white-space: nowrap;
+}
+
+.remove-btn {
+    background: transparent;
+    border: none;
+    color: #9CA3AF;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-btn:hover {
+    color: #E21833;
+}

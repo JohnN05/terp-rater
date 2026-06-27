@@ -8,10 +8,14 @@ function addSectionObservers(){
         for(const record of mutationRecords){
             const addedNodes = record.addedNodes;
     
-            if(addedNodes.length > 0 && addedNodes[0].className==="sections-container"){
-                const sectionContainer = addedNodes[0];
+            const sectionContainer = Array.from(addedNodes).find(
+                node => node.nodeType === Node.ELEMENT_NODE && node.classList?.contains('sections-container')
+            );
+            if(sectionContainer){
                 const instructors = sectionContainer.getElementsByClassName("section-instructor");
                 rateInstructors(instructors);
+                injectSortBar(sectionContainer);
+                injectBookmarkButtons(sectionContainer);
                 courseSectionsLoaded++;
             }
     
