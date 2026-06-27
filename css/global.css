@@ -16,6 +16,11 @@
     flex-wrap: wrap;
     align-items: center;
 
-    max-width: 200px;
+    max-width: 260px;
     row-gap: 0.5em;
+}
+
+.terp-rater-instructor-group {
+    display: inline-flex;
+    align-items: center;
 }

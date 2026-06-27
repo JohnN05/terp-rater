@@ -1,39 +1,55 @@
 :root {
-    --tag-height: 25px;
+    --tag-height: 20px;
 }
 
-.terp-rater-tag{
+.terp-rater-tag {
     box-sizing: border-box;
-    border-radius: 8px;
+    border-radius: 4px;
     margin: auto 0 auto 5px;
-    padding: 0 5px 0 5px;
+    padding: 0 7px;
     height: var(--tag-height);
 
     color: white;
     font-family: "Work Sans";
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
 
     display: inline-flex;
     align-items: center;
-    cursor: default;
+    cursor: help;
 
-    animation: fadeIn 0.3s;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    box-shadow: 0 1px 2px rgba(0,0,0,0.18);
+    animation: fadeIn 0.3s ease;
 }
 
-.terp-rater-tag.rating{
-    transition: 0.3s;
+.terp-rater-tag-container {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.terp-rater-tag.rating {
+    transition: filter 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
 }
 
-.terp-rater-tag.rating:hover{
-    filter: brightness(1.1);
-    transform: scale(1.05)
+.terp-rater-tag.rating:hover {
+    filter: brightness(1.12);
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.22);
 }
 
 @keyframes fadeIn {
-    0%{
+    0% {
         opacity: 0;
+        transform: translateY(2px);
     }
-    100%{
+    100% {
         opacity: 1;
+        transform: translateY(0);
     }
 }

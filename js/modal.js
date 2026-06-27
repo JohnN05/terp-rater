@@ -51,6 +51,7 @@ function createExitButton(dialog){
 
 function createInstructorOverviewElement(name, record){
     const container = document.createElement("div");
+    container.className = "dialog-header";
 
     const headContainer = document.createElement("div");
     headContainer.className = "head-container";
@@ -60,12 +61,19 @@ function createInstructorOverviewElement(name, record){
 
     const ptIcon = getPTIcon(record.slug);
 
-    const subheading1 = createSubheading(`${record.reviews.length} review(s)`, "No reviews")
-    const subheading2 = createSubheading(`Average rating: ${record.rating}`, "No ratings");
-    
+    const subheading1 = createSubheading(`${record.reviews.length} review(s)`, "No reviews");
+
+    const ratingRow = document.createElement("div");
+    ratingRow.className = "dialog-header-rating";
+    const starDisplay = createRatingElement(record.rating);
+    const ratingNum = document.createElement("span");
+    ratingNum.className = "dialog-header-rating-num";
+    ratingNum.textContent = record.rating ?? "No ratings";
+    ratingRow.append(starDisplay, ratingNum);
+
     if(ptIcon) headContainer.append(heading, ptIcon);
     else headContainer.append(heading);
-    container.append(headContainer, subheading1, subheading2);
+    container.append(headContainer, subheading1, ratingRow);
 
     return container;
 }
@@ -96,6 +104,7 @@ function createReviewItem(review){
     const reviewMessage = document.createElement("div");
 
     reviewMessage.style.gridArea = "review";
+    reviewMessage.className = "review-body";
     reviewMessage.textContent = review.review || "";
     
     const reviewInfo = createReviewInfo(review);
@@ -167,7 +176,10 @@ function getPTIcon(slug){
     iconLink.target = "_blank";
     iconLink.rel = "noreferrer";
 
-    iconLink.append(assets.ptIcon.cloneNode());
+    const label = document.createElement("span");
+    label.className = "terp-rater-pt-label";
+    label.textContent = "PlanetTerp";
+    iconLink.append(assets.ptIcon.cloneNode(), label);
     return iconLink;
 }
 

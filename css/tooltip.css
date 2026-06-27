@@ -1,35 +1,37 @@
-:root{
+:root {
     --tooltip-distance: 140%;
 }
 
-.terp-rater-tooltip{
+.terp-rater-tooltip {
     box-sizing: border-box;
     position: absolute;
     transform: translateX(-50%);
     left: 50%;
 
-    transition: opacity 0.3s ease;
+    transition: opacity 0.2s ease;
     opacity: 0;
     visibility: hidden;
 
-    bottom: calc(var(--tooltip-distance) + 10px);
-    z-index: 1;
+    bottom: calc(var(--tooltip-distance) + 8px);
+    z-index: 9999;
 
-    padding: 3px 5px;
-    border-radius: 10px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    max-width: 200px;
 
-    color: black;
-    background-color: white;
+    color: #F9FAFB;
+    background-color: #1E2432;
     text-align: center;
-    white-space: nowrap;
-    font-size: 0.9em;
+    white-space: normal;
+    font-size: 11px;
     font-weight: 500;
     font-family: "Work Sans", sans-serif;
+    line-height: 1.45;
 
-    filter: drop-shadow(2px 2px 2px black);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
 }
 
-.terp-rater-tooltip::after{
+.terp-rater-tooltip::after {
     content: '';
     position: absolute;
     top: 100%;
@@ -37,15 +39,15 @@
     transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 10px solid white;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #1E2432;
 }
 
-.terp-rater-tooltip-visible{
+.terp-rater-tooltip-visible {
     opacity: 1;
 }
 
-.terp-rater-tooltip-container{
+.terp-rater-tooltip-container {
     position: relative;
 }

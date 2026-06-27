@@ -5,7 +5,7 @@ function getTagColor(value, maxValue, grayZero){
     }
 
     const hue = (clampedValue / maxValue) * 120;
-    return `hsl(${hue}, 95%, 35%)`;
+    return `hsl(${hue}, 85%, 38%)`;
 }
 
 function createTagContainer(course){
@@ -70,9 +70,15 @@ function appendWaitlistTag(sectionSeats, tagContainer){
 function appendRatingTag(instructorRecord, instructorElement, instructorName){
     const ratingTag = tagTemplate.cloneNode();
     ratingTag.classList.add("rating");
-    ratingTag.textContent = `\t${instructorRecord.rating}`;
+    ratingTag.textContent = `★ ${instructorRecord.rating}`;
     ratingTag.style.backgroundColor = getTagColor(instructorRecord.rating, 5, true);
 
     addRatingModal(ratingTag, instructorName, instructorRecord);
-    instructorElement.insertAdjacentElement("afterend", ratingTag);
+    const ratingContainer = addTooltip(ratingTag, `Click to see ${instructorRecord.reviews.length} review(s)`);
+
+    const wrapper = document.createElement("span");
+    wrapper.className = "terp-rater-instructor-group";
+    instructorElement.parentNode.insertBefore(wrapper, instructorElement);
+    wrapper.appendChild(instructorElement);
+    wrapper.appendChild(ratingContainer);
 }
