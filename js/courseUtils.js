@@ -1,4 +1,23 @@
 const courseElements = document.body.getElementsByClassName("course");
+
+function showPlanetTerpDownBanner() {
+    if (document.querySelector('.terp-rater-api-banner')) return;
+
+    const banner = document.createElement("div");
+    banner.className = "terp-rater-api-banner";
+
+    const msg = document.createElement("span");
+    msg.textContent = "⚠ PlanetTerp unavailable — GPA & rating data may be missing";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.textContent = "✕";
+    closeBtn.title = "Dismiss";
+    closeBtn.addEventListener("click", () => banner.remove());
+
+    banner.appendChild(msg);
+    banner.appendChild(closeBtn);
+    document.body.appendChild(banner);
+}
 const semesterValue = document.getElementById("term-id-input")?.value;
 const tagTemplate = document.createElement("span");
 tagTemplate.className = "terp-rater-tag"

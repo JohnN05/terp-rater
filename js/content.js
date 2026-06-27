@@ -1,3 +1,4 @@
+showPlanetTerpDownBanner(); // TODO: replace with real API status check
 addSectionObservers();
 addCourseTags();
 
