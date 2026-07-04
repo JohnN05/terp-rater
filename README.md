@@ -2,13 +2,14 @@
 ![Terp Rater](assets/favicon-128.png)
 
 ## Overview
-Terp Rater simplifies University of Maryland's course registration process by providing valuable insights within its course directory.  Powered by PlanetTerp's API, Terp Rater displays information such as average course GPA, available seats, and waitlist numbers next to each course, along with tooltips for more details.
+Terp Rater simplifies University of Maryland's course registration process by providing valuable insights directly within the Testudo course directory. Powered by the PlanetTerp API, Terp Rater displays critical information such as average course GPA, live seat availability, waitlist metrics, and instructor ratings, complete with sorting options and a personal section bookmark manager.
 
 ## Features
-- Professor Ratings - Displays the average student rating next to each professor.
-- Average GPA - Shows the average student GPA of a course.
-- Seat Availability - Indicates the number of open seats and people waitlisted for each course.
-- Professor Reviews - Displays the most recent reviews of a professor when the rating tag is clicked.
+- **Average GPA**: Shows the average student GPA of a course directly on the listings.
+- **Professor Ratings & Reviews**: Displays average rating badges for professors, and lets you click to read their latest PlanetTerp reviews in a modal.
+- **Seat Availability & Waitlists**: Highlights open seats, available sections, waitlisted students, and waitlisted sections.
+- **Smart Sorting & Filtering**: Sort course sections by professor rating or seat count, and toggle a checkbox to filter out full sections.
+- **Bookmarks Manager**: Click the star (☆) next to any section to bookmark it, and manage your saved classes inside the extension popup.
 
 ## Installation
 1. Clone or download Terp Rater's repository

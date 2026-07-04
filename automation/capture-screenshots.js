@@ -248,7 +248,7 @@ const fs = require('fs');
 
     // Save Screenshot 4: Bookmarks Popup View (styled beautifully with presentation background)
     console.log('Capturing Screenshot 4: Popup View...');
-    const popupUrl = `chrome-extension://${extensionId}/popup.html`;
+    const popupUrl = `chrome-extension://${extensionId}/html/popup.html`;
     
     const popupPage = await context.newPage();
     await popupPage.goto(popupUrl);
